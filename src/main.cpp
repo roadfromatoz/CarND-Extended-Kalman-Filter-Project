@@ -48,16 +48,16 @@ int main()
 
       auto s = hasData(std::string(data));
       if (s != "") {
-      	
+
         auto j = json::parse(s);
 
         std::string event = j[0].get<std::string>();
-        
+
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          
+
           string sensor_measurment = j[1]["sensor_measurement"];
-          
+
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
     	  long long timestamp;
@@ -77,7 +77,6 @@ int main()
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
           } else if (sensor_type.compare("R") == 0) {
-
       	  		meas_package.sensor_type_ = MeasurementPackage::RADAR;
           		meas_package.raw_measurements_ = VectorXd(3);
           		float ro;
@@ -86,7 +85,7 @@ int main()
           		iss >> ro;
           		iss >> theta;
           		iss >> ro_dot;
-          		meas_package.raw_measurements_ << ro,theta, ro_dot;
+          		meas_package.raw_measurements_ << ro, theta, ro_dot;
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
           }
@@ -100,14 +99,12 @@ int main()
     	  iss >> vy_gt;
     	  VectorXd gt_values(4);
     	  gt_values(0) = x_gt;
-    	  gt_values(1) = y_gt; 
+    	  gt_values(1) = y_gt;
     	  gt_values(2) = vx_gt;
     	  gt_values(3) = vy_gt;
     	  ground_truth.push_back(gt_values);
-          
           //Call ProcessMeasurment(meas_package) for Kalman filter
-    	  fusionEKF.ProcessMeasurement(meas_package);    	  
-
+    	  fusionEKF.ProcessMeasurement(meas_package);
     	  //Push the current estimated x,y positon from the Klaman filter's state vector
 
     	  VectorXd estimate(4);
@@ -121,7 +118,7 @@ int main()
     	  estimate(1) = p_y;
     	  estimate(2) = v1;
     	  estimate(3) = v2;
-    	  
+
     	  estimations.push_back(estimate);
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
@@ -136,10 +133,10 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-	  
+
         }
       } else {
-        
+
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
@@ -183,90 +180,3 @@ int main()
   }
   h.run();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
